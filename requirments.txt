@@ -1,0 +1,15 @@
+Prerequisites
+- Terraform (>= 1.0)
+- Terragrunt (>= 0.40)
+- kubectl configured to access the target Kubernetes cluster
+- KUBECONFIG environment set (or kube context configured)
+- Access to the Kubernetes API from where you run Terraform (or use a provider that can authenticate from CI)
+
+Repository layout (recommended)
+- modules/
+  - deployment/        # Terraform module that manages a Kubernetes Deployment
+- live/
+  - dev/
+    - terragrunt.hcl   # Terragrunt config for dev
+  - prod/
+    - terragrunt.hcl   # Terragrunt config for prod
