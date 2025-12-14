@@ -81,3 +81,74 @@ cluster is v1.6 or above in `kubectl version`:
     panic: the server could not find the requested resource
 
 [1]: https://kubernetes.io/docs/user-guide/deployments/
+
+
+
+
+# Deployments_curd
+
+This repository demonstrates the fundamental Create, Read (List), Update and Delete (CRUD) operations for Kubernetes Deployment resources using Terraform and Terragrunt. The code is organized as a reusable Terraform module plus Terragrunt configuration for environment-specific orchestration.
+
+Goals
+- Show how to declare a Kubernetes Deployment with Terraform.
+- Show how to structure Terragrunt to call the module per-environment.
+- Demonstrate the workflow to create, list, update and delete Deployments.
+
+Prerequisites
+- Terraform (>= 1.0)
+- Terragrunt (>= 0.40)
+- kubectl configured to access the target Kubernetes cluster
+- KUBECONFIG environment set (or kube context configured)
+- Access to the Kubernetes API from where you run Terraform (or use a provider that can authenticate from CI)
+
+Repository layout (recommended)
+- modules/
+  - deployment/        # Terraform module that manages a Kubernetes Deployment
+- live/
+  - dev/
+    - terragrunt.hcl   # Terragrunt config for dev
+  - prod/
+    - terragrunt.hcl   # Terragrunt config for prod
+
+Quick concepts
+- Create: terragrunt apply (or terraform apply inside module)
+- List: kubectl get deployments -n <namespace>
+- Update: modify variables (image, replicas, envs) and terragrunt apply
+- Delete: terragrunt destroy
+
+Example workflow (using Terragrunt)
+1. Enter environment
+   cd live/dev
+2. Create/Update resources
+   terragrunt init
+   terragrunt apply
+3. Check deployed resources (kubectl)
+   kubectl get deployments -n <namespace>
+4. Update (change image or replicas in terraform variables)
+   terragrunt apply
+5. Delete
+   terragrunt destroy
+
+Terraform / Kubernetes provider notes
+- This example uses the official Terraform kubernetes provider (registry.terraform.io/hashicorp/kubernetes).
+- Provider authentication methods vary (client certs, token, in-cluster). Ensure your environment authenticates correctly.
+
+Example variables you may change
+- name: Deployment name
+- namespace: Kubernetes namespace
+- replicas: number of replicas
+- container_image: container image (e.g., nginx:1.24)
+- container_port: port exposed by the container
+
+Security
+- Do not commit kubeconfigs or secrets to the repository.
+- Use secret management (e.g., Kubernetes Secrets, Vault) for sensitive data.
+
+Next steps / recommendations
+- Add CI that runs terragrunt plan on changes.
+- Integrate image update automation (e.g., Flux, ArgoCD) if desired.
+- Add health checks, resource requests/limits, and probes to the module.
+
+If you'd like, I can:
+- create the Terraform module files and a sample Terragrunt config in this repo,
+- or adapt the module to use a different provider or authentication method.
